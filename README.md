@@ -58,9 +58,14 @@ $ v4l2-ctl --device=/dev/video0 --list-formats-ext
 ```
 For more info https://github.com/dusty-nv/jetson-inference/blob/master/docs/aux-streaming.md#source-code
 ## Camera Stream
-Stream video from camera locally
+Stream video from camera locally\
+RaspPi CamV2 source
 ```
-gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)NV12, framerate=(fraction)30/1' ! nvoverlaysink -e
+$ gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)NV12, framerate=(fraction)30/1' ! nvoverlaysink -e
+```
+USB Camera Source
+```
+$ gst-launch-1.0 v4l2src device="/dev/video1" ! "video/x-raw, width=640, height=480, format=(string)YUY2" ! xvimagesink -e
 ```
 ## Camera Record
 Record video from Camera and save into file
