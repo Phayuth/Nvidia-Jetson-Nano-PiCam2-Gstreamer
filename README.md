@@ -42,7 +42,11 @@ In above Pipeline commad :
 #### Media sink
 {media sink} can be replaced with sink command to display the media or forward it to another network.
 # Camera Source
-Camera source can come in differents feed. There are CSI cameras, V4L2 cameras.
+Camera source can come in differents feed. There are CSI cameras, V4L2 cameras.\
+To list any available cameras and supprot format
+```
+$ v4l2-ctl --list-devices
+```
 #### CSI cameras
 Usually directly connect to camera header on Nvidia Jetson Devices or Raspberry Pi. For example a commonly use RaspPi CamV2.
 #### V4l2 cameras
