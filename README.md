@@ -23,14 +23,58 @@ Gstreamer plug-in inspect
 ```
 $ gst-inspect-1.0 {plug-in name}
 ```
-#### Gstreamer simple Pipeline command
-
-# Video Source
-
-## Video Encode
-
+#### Gstreamer Example Pipeline command
+```
+$ gst-launch-1.0 nvarguscamerasrc ! nvoverlaysink -e
+```
+Explanation :\
+Gstreamer use pipeline command to construct it work, thus writing a correct pipelink command is a key to make it work.\
+Gstreamer pipeline is constructed in a sequential line : {media source} ! {modification} ! {media sink} \
+Where '!' is a symbol used to separate the command.\
+\
+In above Pipeline commad :
+- nvarguscamerasrc = video stream source coming from RaspPi Camera 2
+- nvoverlaysink    = sink the camera stream in disply window
+#### Media Source
+{media source} can be replaced with any media source such as camera stream, local media file, network media file
+#### Modification
+{modification} can be replaced with modification command that allow user to alter the media to their desire such as flip, rotate, filter, convert file format, encode, decode, resize, payload stream, -etc.
+#### Media sink
+{media sink} can be replaced with sink command to display the media or forward it to another network.
 # Camera Source
-
+Camera source can come in differents feed. There are CSI cameras, V4L2 cameras.
+#### CSI cameras
+Usually directly connect to camera header on Nvidia Jetson Devices or Raspberry Pi. For example a commonly use RaspPi CamV2.
+#### V4l2 cameras
+Usually directly connect to the device using USB interface such as Webcam. For example Logitech cam C series.
+For more info https://github.com/dusty-nv/jetson-inference/blob/master/docs/aux-streaming.md#source-code
 ## Camera Stream
-
+Stream video from camera locally
+```
+gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)NV12, framerate=(fraction)30/1' ! nvoverlaysink -e
+```
 ## Camera Record
+Record video from Camera and save into file
+```
+gst-launch-1.0 nvarguscamerasrc maxper f=1 ! 'video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)NV12, framerate=(fraction)30/1' ! nvv4l2h265enc control-rate=1 bitrate=8000000 ! 'video/x-h265, stream-format=(string)byte-stream' ! h265parse ! qtmux ! filesink location=test.mp4 -e 
+```
+# Streaming RaspPi CameraV2 from Jetson Nano on rtsp-server and view on VLC Player on Window PC
+Make sure both Jetson Nano and PC are connected to the same network\
+On Jetson Nano, Install rtsp-server library
+```
+$ sudo apt-get install libgstrtspserver-1.0
+```
+Clone gst-rtsp-server-master repository
+```
+$ git clone https://github.com/GStreamer/gst-rtsp-server
+```
+Go to gst-rtsp-server-master directory
+```
+$ cd ~/gst-rtsp-server-master/example
+$ gcc test-launch.c -o test-launch $(pkg-config --cflags --libs gstreamer-1.0 gstreamer-rtsp-server-1.0)
+```
+While in that directory
+```
+$ sudo ./test-launch "videotestsrc ! nvvidconv ! nvv4l2h265enc ! h265parse ! video/x-h265, stream-format=byte-stream ! rtph265pay name=pay0 pt=96 "
+```
+View Camera Stream via VLC network rtsp://JETSON_IP:8554/test _Pipeline by matteoluci81|nvforum_
