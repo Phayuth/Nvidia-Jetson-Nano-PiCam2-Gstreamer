@@ -46,7 +46,12 @@ Camera source can come in differents feed. There are CSI cameras, V4L2 cameras.
 #### CSI cameras
 Usually directly connect to camera header on Nvidia Jetson Devices or Raspberry Pi. For example a commonly use RaspPi CamV2.
 #### V4l2 cameras
-Usually directly connect to the device using USB interface such as Webcam. For example Logitech cam C series.
+Usually directly connect to the device using USB interface such as Webcam. For example Logitech cam C series.\
+Install V4l2 device
+```
+$ sudo apt-get install v4l-utils
+$ v4l2-ctl --device=/dev/video0 --list-formats-ext
+```
 For more info https://github.com/dusty-nv/jetson-inference/blob/master/docs/aux-streaming.md#source-code
 ## Camera Stream
 Stream video from camera locally
